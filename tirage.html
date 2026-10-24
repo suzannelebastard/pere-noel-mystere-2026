@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f4ec" />
+    <title>Tirage | Père Noël mystère</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-page="draw">
+    <main class="shell">
+      <header class="topbar">
+        <a class="wordmark" href="index.html" aria-label="Père Noël mystère, accueil">P<span>·</span>N<span>·</span>M</a>
+        <nav aria-label="Navigation principale">
+          <a class="nav-link" href="index.html">Déposer</a>
+          <a class="nav-link active" href="tirage.html" aria-current="page">Tirage</a>
+        </nav>
+      </header>
+
+      <section class="content draw-content">
+        <p class="eyebrow">PÈRE NOËL MYSTÈRE · LE TIRAGE</p>
+        <h1>Le hasard<br /><em>fera le reste.</em></h1>
+        <p class="intro">Tirez un mot, relancez si besoin, puis validez votre choix.</p>
+
+        <section class="draw-panel" aria-labelledby="draw-heading">
+          <div class="draw-panel-top"><span id="draw-heading">VOTRE MOT</span><span class="draw-star" aria-hidden="true">✳</span></div>
+          <div class="draw-result" id="draw-result" aria-live="polite">Prêt quand vous l’êtes.</div>
+          <p class="status" id="draw-status" role="status" aria-live="polite">Le mot ne sera retiré qu’après validation.</p>
+          <div class="draw-actions">
+            <button class="button button-outline" id="draw-again" type="button">Tirer un mot</button>
+            <button class="button button-primary" id="confirm-draw" type="button" disabled>Valider ce mot <span aria-hidden="true">✓</span></button>
+          </div>
+        </section>
+      </section>
+
+      <footer class="footer"><span>Un mot validé ne peut plus être tiré par quelqu’un d’autre.</span><span>02 / 02</span></footer>
+    </main>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

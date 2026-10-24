@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Prévisualiser le site Père Noël mystère",
+			"type": "shell",
+			"command": "python",
+			"args": [
+				"-m",
+				"http.server",
+				"8000",
+				"--bind",
+				"127.0.0.1"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}
