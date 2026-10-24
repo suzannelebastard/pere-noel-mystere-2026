@@ -64,7 +64,7 @@
       event.preventDefault();
       var text = input.value.trim();
       if (!text) {
-        showStatus(status, "Écrivez un mot avant de le déposer.", true);
+        showStatus(status, "Renseignez une musique avant de la déposer.", true);
         return;
       }
       var button = form.querySelector("button[type=submit]");
@@ -76,7 +76,7 @@
         body: JSON.stringify({ text: text })
       }).then(function () {
         input.value = "";
-        showStatus(status, "Votre mot a bien été déposé. Merci !");
+        showStatus(status, "Votre musique a bien été déposée. Merci !");
       }).catch(function (error) {
         showStatus(status, error.message, true);
       }).then(function () {
@@ -94,13 +94,12 @@
     var pending = storedPending ? JSON.parse(storedPending) : null;
     var pendingId = pending ? pending.id : null;
     var busy = false;
+    var drawOpen = false;
     var complete = false;
-
-    if (pending) result.textContent = pending.text;
 
     function setBusy(value) {
       busy = value;
-      drawButton.disabled = value || complete;
+      drawButton.disabled = value || complete || !drawOpen;
       confirmButton.disabled = value || !pendingId;
     }
 
@@ -109,7 +108,7 @@
       window.localStorage.setItem(completedStorageKey, "true");
       window.localStorage.removeItem(pendingStorageKey);
       pendingId = null;
-      result.textContent = "Votre mot a été validé. Merci !";
+      result.textContent = "Votre musique a été validée. Merci !";
       showStatus(status, "Ce tirage est terminé sur cet appareil.");
       drawButton.disabled = true;
       drawButton.textContent = "Tirage terminé";
@@ -122,11 +121,32 @@
       return;
     }
 
+    showStatus(status, "Vérification de l’ouverture du tirage…");
+    request("rpc/draw_is_open", {
+      method: "POST",
+      body: "{}"
+    }).then(function (isOpen) {
+      if (isOpen !== true) {
+        result.textContent = "Le tirage n’est pas encore ouvert.";
+        showStatus(status, "Le tirage sera révélé quand tout le monde aura participé.");
+        return;
+      }
+      drawOpen = true;
+      result.textContent = pending ? pending.text : "Prêt quand vous l’êtes.";
+      showStatus(status, pending
+        ? "Musique provisoire. Vous pouvez relancer ou la valider."
+        : "La musique ne sera retirée qu’après validation.");
+      setBusy(false);
+    }).catch(function (error) {
+      result.textContent = "Le tirage n’est pas disponible.";
+      showStatus(status, error.message, true);
+    });
+
     drawButton.addEventListener("click", function () {
-      if (busy) return;
+      if (busy || !drawOpen) return;
       setBusy(true);
       result.textContent = "La roulette tourne…";
-      showStatus(status, "Recherche d’un mot disponible…");
+      showStatus(status, "Recherche d’une musique disponible…");
       request("rpc/draw_keyword", {
         method: "POST",
         body: JSON.stringify({
@@ -142,15 +162,15 @@
           pendingId = null;
           pending = null;
           window.localStorage.removeItem(pendingStorageKey);
-          result.textContent = "Le sac est vide.";
-          showStatus(status, "Aucun mot n’est disponible pour le moment.");
+          result.textContent = "Aucune musique disponible.";
+          showStatus(status, "Aucune musique n’est disponible pour le moment.");
           return;
         }
         pendingId = rows[0].keyword_id;
         pending = { id: pendingId, text: rows[0].keyword_text };
         window.localStorage.setItem(pendingStorageKey, JSON.stringify(pending));
         result.textContent = rows[0].keyword_text;
-        showStatus(status, "Mot provisoire. Vous pouvez relancer ou le valider.");
+        showStatus(status, "Musique provisoire. Vous pouvez relancer ou la valider.");
       }).catch(function (error) {
         showStatus(status, error.message, true);
         result.textContent = "Le tirage n’a pas pu démarrer.";
@@ -174,7 +194,7 @@
           pendingId = null;
           pending = null;
           window.localStorage.removeItem(pendingStorageKey);
-          result.textContent = "Ce mot n’est plus disponible.";
+          result.textContent = "Cette musique n’est plus disponible.";
           showStatus(status, "Relancez le tirage pour en choisir un autre.", true);
           return;
         }

@@ -3,41 +3,37 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f6f4ec" />
-    <title>Déposer un mot | Père Noël mystère</title>
+    <meta name="theme-color" content="#f4f8fb" />
+    <title>Déposer une musique | Père Noël mystère</title>
     <link rel="stylesheet" href="styles.css?v=tesmo-2026" />
   </head>
   <body data-page="submit">
     <main class="shell">
       <header class="topbar">
-        <a class="brand" href="index.html" aria-label="Tesmo Contrôle, accueil">
+        <div class="brand">
           <img class="brand-logo" src="assets/tesmo-controle.svg" alt="Tesmo Contrôle" />
-        </a>
-        <nav aria-label="Navigation principale">
-          <a class="nav-link active" href="index.html" aria-current="page">Déposer</a>
-          <a class="nav-link" href="tirage.html">Tirage</a>
-        </nav>
+        </div>
       </header>
 
       <section class="content submit-content">
         <p class="eyebrow">PÈRE NOËL MYSTÈRE · ÉDITION 2026</p>
-        <h1>Un mot,<br /><em>en secret.</em></h1>
-        <p class="intro">Déposez votre mot-clé. Il sera ajouté à la liste sans votre nom.</p>
+        <h1>Une musique,<br /><em>un collègue.</em></h1>
+        <p class="intro">Renseignez une musique (ou URL) que vous aimez, qui vous fait rire ou pleurer... Bref, une musique qui vous représente ! Un collègue devra vous retrouver avec cet indice...</p>
 
         <form id="submit-form" class="form-panel">
-          <label for="keyword">Votre mot-clé</label>
-          <textarea id="keyword" name="keyword" maxlength="140" rows="3" placeholder="Une idée, un objet, une envie…" required></textarea>
+          <label for="keyword">Votre musique</label>
+          <textarea id="keyword" name="keyword" maxlength="2048" rows="3" placeholder="Un titre, un artiste ou une URL…" required></textarea>
           <div class="form-bottom">
-            <span class="quiet">140 caractères maximum</span>
+            <span class="quiet">2 048 caractères maximum</span>
             <button class="button button-primary" type="submit">
-              <span>Déposer le mot</span><span aria-hidden="true">↗</span>
+              <span>Déposer la musique</span><span aria-hidden="true">↗</span>
             </button>
           </div>
           <p class="status" id="submit-status" role="status" aria-live="polite"></p>
         </form>
       </section>
 
-      <footer class="footer"><span>Un mot dans le sac, un peu de mystère dans l’air.</span><span>01 / 02</span></footer>
+      <footer class="footer"><span>Une musique dans le sac, un indice pour un collègue.</span><span>01 / 02</span></footer>
     </main>
     <script src="config.js"></script>
     <script src="app.js"></script>

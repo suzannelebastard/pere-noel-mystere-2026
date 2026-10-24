@@ -49,19 +49,6 @@ body {
 
 .brand-logo { display: block; width: 100%; height: auto; }
 
-nav { display: flex; gap: 30px; }
-
-.nav-link {
-  position: relative;
-  padding: 10px 0;
-  color: var(--muted);
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.nav-link.active { color: var(--ink); font-weight: 700; }
-.nav-link.active::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--blue); content: ''; }
-
 .content {
   width: min(100%, 720px);
   margin: auto;
@@ -147,7 +134,7 @@ textarea::placeholder { color: #8996a3; }
 
 .button:hover:not(:disabled) { transform: translateY(-1px); }
 .button[hidden] { display: none; }
-.button:focus-visible, .nav-link:focus-visible, .brand:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 .button:disabled { cursor: not-allowed; opacity: 0.52; }
 .button-primary { background: var(--blue); color: white; }
 .button-primary:hover:not(:disabled) { background: var(--blue-dark); }
@@ -184,7 +171,6 @@ textarea::placeholder { color: #8996a3; }
   .shell { padding: 0 22px; }
   .topbar { height: 72px; }
   .brand { width: 126px; }
-  nav { gap: 22px; }
   .content { padding: 58px 0 64px; }
   .intro { margin: 19px 0 29px; font-size: 15px; }
   .form-panel { padding: 19px; }

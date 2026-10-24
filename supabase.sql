@@ -1,27 +1,52 @@
 create table if not exists public.keywords (
   id bigint generated always as identity primary key,
-  text text not null check (char_length(btrim(text)) between 1 and 140),
+  text text not null check (char_length(btrim(text)) between 1 and 2048),
   created_at timestamptz not null default now(),
   reserved_by uuid,
   reserved_until timestamptz
 );
+
+alter table public.keywords drop constraint if exists keywords_text_check;
+alter table public.keywords
+  add constraint keywords_text_check check (char_length(btrim(text)) between 1 and 2048);
 
 create table if not exists public.completed_draws (
   drawer_id uuid primary key,
   completed_at timestamptz not null default now()
 );
 
+create table if not exists public.draw_settings (
+  id integer primary key check (id = 1),
+  is_open boolean not null default false
+);
+
+insert into public.draw_settings (id, is_open)
+  values (1, false)
+  on conflict (id) do nothing;
+
 alter table public.keywords enable row level security;
 alter table public.completed_draws enable row level security;
+alter table public.draw_settings enable row level security;
 
 revoke all on public.keywords from anon, authenticated;
 revoke all on public.completed_draws from anon, authenticated;
+revoke all on public.draw_settings from anon, authenticated;
 grant insert (text) on public.keywords to anon;
 
 drop policy if exists "Allow anonymous keyword submissions" on public.keywords;
 create policy "Allow anonymous keyword submissions"
   on public.keywords for insert to anon
-  with check (char_length(btrim(text)) between 1 and 140);
+  with check (char_length(btrim(text)) between 1 and 2048);
+
+create or replace function public.draw_is_open()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select coalesce((select is_open from public.draw_settings where id = 1), false);
+$$;
 
 create or replace function public.draw_keyword(
   p_drawer_id uuid,
@@ -33,6 +58,10 @@ security definer
 set search_path = public, pg_temp
 as $$
 begin
+  if not public.draw_is_open() then
+    return;
+  end if;
+
   if exists (
     select 1 from public.completed_draws where drawer_id = p_drawer_id
   ) then
@@ -82,6 +111,10 @@ declare
   inserted_count integer;
   deleted_count integer;
 begin
+  if not public.draw_is_open() then
+    return false;
+  end if;
+
   insert into public.completed_draws (drawer_id)
     values (p_drawer_id)
     on conflict (drawer_id) do nothing;
@@ -113,5 +146,7 @@ $$;
 
 revoke all on function public.draw_keyword(uuid, bigint) from public;
 revoke all on function public.confirm_keyword(uuid, bigint) from public;
+revoke all on function public.draw_is_open() from public;
 grant execute on function public.draw_keyword(uuid, bigint) to anon;
 grant execute on function public.confirm_keyword(uuid, bigint) to anon;
+grant execute on function public.draw_is_open() to anon;
