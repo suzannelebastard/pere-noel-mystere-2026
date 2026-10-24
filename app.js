@@ -74,17 +74,45 @@
     var input = document.getElementById("keyword");
     var status = document.getElementById("submit-status");
     var button = form.querySelector("button[type=submit]");
+    var submissionsOpen = false;
 
     if (window.localStorage.getItem(submissionStorageKey) === "true") {
       button.disabled = true;
       showStatus(status, "Une musique a déjà été déposée depuis ce navigateur.");
+    } else {
+      button.disabled = true;
+      showStatus(status, "Vérification de l’ouverture des participations…");
     }
+
+    request("rpc/submissions_are_open", {
+      method: "POST",
+      body: "{}"
+    }).then(function (isOpen) {
+      submissionsOpen = isOpen === true;
+      var alreadySubmitted = window.localStorage.getItem(submissionStorageKey) === "true";
+      button.disabled = alreadySubmitted || !submissionsOpen;
+      if (alreadySubmitted) {
+        showStatus(status, "Une musique a déjà été déposée depuis ce navigateur.");
+      } else if (!submissionsOpen) {
+        showStatus(status, "Les participations sont fermées.");
+      } else {
+        showStatus(status, "");
+      }
+    }).catch(function (error) {
+      button.disabled = true;
+      showStatus(status, errorMessage(error), true);
+    });
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       if (window.localStorage.getItem(submissionStorageKey) === "true") {
         button.disabled = true;
         showStatus(status, "Une musique a déjà été déposée depuis ce navigateur.");
+        return;
+      }
+      if (!submissionsOpen) {
+        button.disabled = true;
+        showStatus(status, "Les participations sont fermées.", true);
         return;
       }
       var text = input.value.trim();
@@ -105,7 +133,7 @@
       }).catch(function (error) {
         showStatus(status, errorMessage(error), true);
       }).then(function () {
-        button.disabled = window.localStorage.getItem(submissionStorageKey) === "true";
+        button.disabled = window.localStorage.getItem(submissionStorageKey) === "true" || !submissionsOpen;
       });
     });
   }

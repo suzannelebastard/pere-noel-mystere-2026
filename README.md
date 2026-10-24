@@ -9,6 +9,6 @@ Deux pages statiques pour déposer anonymement une musique (ou son URL) et en ti
 3. N’utilisez jamais la clé `service_role` dans le navigateur.
 4. Pour un test local, lancez `python -m http.server 8000` depuis ce dossier puis ouvrez `http://localhost:8000`.
 
-Le tirage reste verrouillé par défaut, y compris si quelqu’un connaît directement son URL. Après avoir vérifié que tous les collègues ont déposé leur musique, ouvrez-le depuis l’éditeur SQL Supabase avec `update public.draw_settings set is_open = true where id = 1;`.
+Le tirage reste verrouillé par défaut, y compris si quelqu’un connaît directement son URL. Après avoir vérifié que tous les collègues ont déposé leur musique, fermez les participations et ouvrez le tirage dans l’éditeur SQL Supabase avec `update public.draw_settings set submissions_open = false, is_open = true where id = 1;`.
 
 La limite d’un tirage confirmé repose sur un identifiant conservé dans le navigateur et en base. Sans compte ni code d’accès, elle ne peut pas identifier une personne qui change de navigateur ou efface ses données. Le projet Supabase et le site doivent être partagés avec l’équipe pour utiliser la même liste.

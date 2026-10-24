@@ -17,8 +17,12 @@ create table if not exists public.completed_draws (
 
 create table if not exists public.draw_settings (
   id integer primary key check (id = 1),
-  is_open boolean not null default false
+  is_open boolean not null default false,
+  submissions_open boolean not null default true
 );
+
+alter table public.draw_settings
+  add column if not exists submissions_open boolean not null default true;
 
 insert into public.draw_settings (id, is_open)
   values (1, false)
@@ -33,11 +37,6 @@ revoke all on public.completed_draws from anon, authenticated;
 revoke all on public.draw_settings from anon, authenticated;
 grant insert (text) on public.keywords to anon;
 
-drop policy if exists "Allow anonymous keyword submissions" on public.keywords;
-create policy "Allow anonymous keyword submissions"
-  on public.keywords for insert to anon
-  with check (char_length(btrim(text)) between 1 and 2048);
-
 create or replace function public.draw_is_open()
 returns boolean
 language sql
@@ -47,6 +46,24 @@ set search_path = public, pg_temp
 as $$
   select coalesce((select is_open from public.draw_settings where id = 1), false);
 $$;
+
+create or replace function public.submissions_are_open()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select coalesce((select submissions_open from public.draw_settings where id = 1), false);
+$$;
+
+drop policy if exists "Allow anonymous keyword submissions" on public.keywords;
+create policy "Allow anonymous keyword submissions"
+  on public.keywords for insert to anon
+  with check (
+    char_length(btrim(text)) between 1 and 2048
+    and public.submissions_are_open()
+  );
 
 create or replace function public.draw_keyword(
   p_drawer_id uuid,
@@ -147,6 +164,8 @@ $$;
 revoke all on function public.draw_keyword(uuid, bigint) from public;
 revoke all on function public.confirm_keyword(uuid, bigint) from public;
 revoke all on function public.draw_is_open() from public;
+revoke all on function public.submissions_are_open() from public;
 grant execute on function public.draw_keyword(uuid, bigint) to anon;
 grant execute on function public.confirm_keyword(uuid, bigint) to anon;
 grant execute on function public.draw_is_open() to anon;
+grant execute on function public.submissions_are_open() to anon;
