@@ -161,7 +161,7 @@
       window.localStorage.setItem(completedStorageKey, "true");
       window.localStorage.removeItem(pendingStorageKey);
       pendingId = null;
-      result.textContent = "Votre musique a été validée. Merci !";
+      result.textContent = "Tirage effectué ! Maintenant il faut identifier à qui elle appartient...";
       showStatus(status, "Ce tirage est terminé sur cet appareil.");
       drawButton.disabled = true;
       drawButton.textContent = "Tirage terminé";

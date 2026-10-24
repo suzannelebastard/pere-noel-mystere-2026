@@ -40,14 +40,15 @@ body {
 }
 
 .brand {
-  display: inline-flex;
-  width: 150px;
+  display: flex;
   flex: 0 0 auto;
   align-items: center;
+  gap: 12px;
   text-decoration: none;
 }
 
-.brand-logo { display: block; width: 100%; height: auto; }
+.brand-logo { display: block; width: 150px; height: auto; }
+.brand-label { color: var(--blue); font-size: 18px; font-weight: 700; }
 
 .content {
   width: min(100%, 720px);
@@ -170,7 +171,8 @@ textarea::placeholder { color: #8996a3; }
 @media (max-width: 600px) {
   .shell { padding: 0 22px; }
   .topbar { height: 72px; }
-  .brand { width: 126px; }
+  .brand-logo { width: 126px; }
+  .brand-label { font-size: 16px; }
   .content { padding: 58px 0 64px; }
   .intro { margin: 19px 0 29px; font-size: 15px; }
   .form-panel { padding: 19px; }
