@@ -260,6 +260,76 @@
     });
   }
 
+  function revealPage() {
+    var result = document.getElementById("reveal-result");
+    var status = document.getElementById("reveal-status");
+    var button = document.getElementById("reveal-next");
+    var revealOpen = false;
+    var busy = false;
+    var finished = false;
+
+    function setBusy(value) {
+      busy = value;
+      button.disabled = value || !revealOpen || finished;
+    }
+
+    showStatus(status, "Vérification de l’ouverture des révélations…");
+    request("rpc/reveal_is_open", {
+      method: "POST",
+      body: "{}"
+    }).then(function (isOpen) {
+      revealOpen = isOpen === true;
+      if (!revealOpen) {
+        result.textContent = "La roulette n’est pas encore ouverte.";
+        showStatus(status, "Les musiques seront révélées quand le tirage sera terminé.");
+        return;
+      }
+      result.textContent = "Prêt à révéler la première musique.";
+      showStatus(status, "Une musique sera révélée à chaque tour, sans répétition.");
+      setBusy(false);
+    }).catch(function (error) {
+      result.textContent = "La roulette n’est pas disponible.";
+      showStatus(status, errorMessage(error), true);
+    });
+
+    button.addEventListener("click", function () {
+      if (busy || !revealOpen || finished) return;
+      setBusy(true);
+      result.textContent = "La roulette tourne…";
+      showStatus(status, "Tirage d’une musique de l’archive…");
+      request("rpc/reveal_next_music", {
+        method: "POST",
+        body: "{}"
+      }).then(function (rows) {
+        if (!rows || !rows.length) {
+          finished = true;
+          result.textContent = "Toutes les musiques ont été révélées.";
+          showStatus(status, "La roulette est terminée.");
+          button.textContent = "Révélation terminée";
+          return;
+        }
+
+        var music = rows[0];
+        var remaining = Number(music.remaining_count);
+        result.textContent = music.music_text;
+        if (remaining === 0) {
+          finished = true;
+          showStatus(status, "Dernière musique révélée. La roulette est terminée.");
+          button.textContent = "Révélation terminée";
+        } else {
+          showStatus(status, "Il reste " + remaining + " musique(s) à révéler.");
+          button.textContent = "Révéler la suivante";
+        }
+      }).catch(function (error) {
+        showStatus(status, errorMessage(error), true);
+        result.textContent = "La musique n’a pas pu être révélée.";
+      }).then(function () {
+        setBusy(false);
+      });
+    });
+  }
+
   if (page === "submit") submitPage();
   if (page === "draw") drawPage();
+  if (page === "reveal") revealPage();
 }());

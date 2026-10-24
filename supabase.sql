@@ -15,14 +15,25 @@ create table if not exists public.completed_draws (
   completed_at timestamptz not null default now()
 );
 
+create table if not exists public.drawn_keywords (
+  id bigint primary key,
+  text text not null check (char_length(btrim(text)) between 1 and 2048),
+  created_at timestamptz not null,
+  drawn_at timestamptz not null default now(),
+  revealed_at timestamptz
+);
+
 create table if not exists public.draw_settings (
   id integer primary key check (id = 1),
   is_open boolean not null default false,
-  submissions_open boolean not null default true
+  submissions_open boolean not null default true,
+  reveal_open boolean not null default false
 );
 
 alter table public.draw_settings
   add column if not exists submissions_open boolean not null default true;
+alter table public.draw_settings
+  add column if not exists reveal_open boolean not null default false;
 
 insert into public.draw_settings (id, is_open)
   values (1, false)
@@ -30,10 +41,12 @@ insert into public.draw_settings (id, is_open)
 
 alter table public.keywords enable row level security;
 alter table public.completed_draws enable row level security;
+alter table public.drawn_keywords enable row level security;
 alter table public.draw_settings enable row level security;
 
 revoke all on public.keywords from anon, authenticated;
 revoke all on public.completed_draws from anon, authenticated;
+revoke all on public.drawn_keywords from anon, authenticated;
 revoke all on public.draw_settings from anon, authenticated;
 grant insert (text) on public.keywords to anon;
 
@@ -55,6 +68,57 @@ security definer
 set search_path = public, pg_temp
 as $$
   select coalesce((select submissions_open from public.draw_settings where id = 1), false);
+$$;
+
+create or replace function public.reveal_is_open()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select coalesce((select reveal_open and not is_open from public.draw_settings where id = 1), false);
+$$;
+
+create or replace function public.reveal_next_music()
+returns table(music_id bigint, music_text text, remaining_count bigint)
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  selected_id bigint;
+  selected_text text;
+begin
+  if not public.reveal_is_open() then
+    return;
+  end if;
+
+  select id into selected_id
+    from public.drawn_keywords
+    where revealed_at is null
+    order by random()
+    limit 1
+    for update skip locked;
+
+  if selected_id is null then
+    return;
+  end if;
+
+  update public.drawn_keywords
+    set revealed_at = now()
+    where id = selected_id and revealed_at is null
+    returning text into selected_text;
+
+  if not found then
+    return;
+  end if;
+
+  return query
+    select selected_id, selected_text, count(*)
+      from public.drawn_keywords
+      where revealed_at is null;
+end;
 $$;
 
 drop policy if exists "Allow anonymous keyword submissions" on public.keywords;
@@ -126,6 +190,7 @@ set search_path = public, pg_temp
 as $$
 declare
   inserted_count integer;
+  archived_count integer;
   deleted_count integer;
 begin
   if not public.draw_is_open() then
@@ -144,11 +209,24 @@ begin
     return false;
   end if;
 
+  insert into public.drawn_keywords (id, text, created_at)
+    select id, text, created_at
+      from public.keywords
+      where id = p_keyword_id and reserved_by = p_drawer_id
+    on conflict (id) do nothing;
+  get diagnostics archived_count = row_count;
+
+  if archived_count = 0 then
+    delete from public.completed_draws where drawer_id = p_drawer_id;
+    return false;
+  end if;
+
   delete from public.keywords
     where id = p_keyword_id and reserved_by = p_drawer_id;
   get diagnostics deleted_count = row_count;
 
   if deleted_count = 0 then
+    delete from public.drawn_keywords where id = p_keyword_id;
     delete from public.completed_draws where drawer_id = p_drawer_id;
     return false;
   end if;
@@ -165,7 +243,11 @@ revoke all on function public.draw_keyword(uuid, bigint) from public;
 revoke all on function public.confirm_keyword(uuid, bigint) from public;
 revoke all on function public.draw_is_open() from public;
 revoke all on function public.submissions_are_open() from public;
+revoke all on function public.reveal_is_open() from public;
+revoke all on function public.reveal_next_music() from public;
 grant execute on function public.draw_keyword(uuid, bigint) to anon;
 grant execute on function public.confirm_keyword(uuid, bigint) to anon;
 grant execute on function public.draw_is_open() to anon;
 grant execute on function public.submissions_are_open() to anon;
+grant execute on function public.reveal_is_open() to anon;
+grant execute on function public.reveal_next_music() to anon;

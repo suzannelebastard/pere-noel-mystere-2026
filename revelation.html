@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3f8f4" />
+    <title>Révélation des musiques | LICA · Père Noël mystère</title>
+    <link rel="stylesheet" href="styles.css?v=christmas-kitsch-2" />
+  </head>
+  <body data-page="reveal">
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="assets/tesmo-controle.svg" alt="Tesmo Contrôle" />
+          <span class="brand-label">LICA</span>
+        </div>
+      </header>
+      <div class="holiday-trim" aria-hidden="true"><span>🎄</span><span>✨</span><span>🎅</span><span>✨</span><span>🎄</span></div>
+
+      <section class="content draw-content">
+        <p class="eyebrow">PÈRE NOËL MYSTÈRE · LICA · RÉVÉLATIONS</p>
+        <h1>La roulette<br /><em>des musiques</em></h1>
+        <p class="intro">Une musique sera révélée à chaque tour. Elle ne pourra pas ressortir une seconde fois.</p>
+
+        <section class="draw-panel" aria-labelledby="reveal-heading">
+          <div class="draw-panel-top"><span id="reveal-heading">MUSIQUE À RÉVÉLER</span><span class="draw-star" aria-hidden="true">✨🎄✨</span></div>
+          <div class="draw-result" id="reveal-result" aria-live="polite">La roulette n’est pas encore ouverte.</div>
+          <p class="status" id="reveal-status" role="status" aria-live="polite">Les musiques seront révélées quand le tirage sera terminé.</p>
+          <div class="draw-actions">
+            <button class="button button-primary" id="reveal-next" type="button" disabled>Révéler une musique <span aria-hidden="true">✦</span></button>
+          </div>
+        </section>
+      </section>
+
+      <footer class="footer"><span>Chaque musique validée est conservée dans l’archive.</span><span>03 / 03</span></footer>
+    </main>
+    <script src="config.js?v=c929e76"></script>
+    <script src="app.js?v=archive-reveal-1"></script>
+  </body>
+</html>
