@@ -8,6 +8,7 @@
   var drawerStorageKey = "santa-drawer-id";
   var completedStorageKey = "santa-draw-completed";
   var pendingStorageKey = "santa-pending-keyword";
+  var submissionStorageKey = "santa-music-submitted";
 
   function ready() {
     return apiUrl.indexOf("https://") === 0 && apiKey && apiKey !== "YOUR_SUPABASE_ANON_KEY";
@@ -72,15 +73,25 @@
     var form = document.getElementById("submit-form");
     var input = document.getElementById("keyword");
     var status = document.getElementById("submit-status");
+    var button = form.querySelector("button[type=submit]");
+
+    if (window.localStorage.getItem(submissionStorageKey) === "true") {
+      button.disabled = true;
+      showStatus(status, "Une musique a déjà été déposée depuis ce navigateur.");
+    }
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
+      if (window.localStorage.getItem(submissionStorageKey) === "true") {
+        button.disabled = true;
+        showStatus(status, "Une musique a déjà été déposée depuis ce navigateur.");
+        return;
+      }
       var text = input.value.trim();
       if (!text) {
         showStatus(status, "Renseignez une musique avant de la déposer.", true);
         return;
       }
-      var button = form.querySelector("button[type=submit]");
       button.disabled = true;
       showStatus(status, "Enregistrement en cours…");
       request("keywords", {
@@ -88,12 +99,13 @@
         headers: { Prefer: "return=minimal" },
         body: JSON.stringify({ text: text })
       }).then(function () {
+        window.localStorage.setItem(submissionStorageKey, "true");
         input.value = "";
         showStatus(status, "Votre musique a bien été déposée. Merci !");
       }).catch(function (error) {
         showStatus(status, errorMessage(error), true);
       }).then(function () {
-        button.disabled = false;
+        button.disabled = window.localStorage.getItem(submissionStorageKey) === "true";
       });
     });
   }
