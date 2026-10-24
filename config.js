@@ -1,4 +1,4 @@
 window.SANTA_CONFIG = {
-  supabaseUrl: "https://YOUR_PROJECT.supabase.co",
-  supabaseAnonKey: "YOUR_SUPABASE_ANON_KEY"
+  supabaseUrl: "https://xojatjmmvfwtuzuqzlkk.supabase.co",
+  supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvamF0am1tdmZ3dHV6dXF6bGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4NTk4MTAsImV4cCI6MjEwODQzNTgxMH0.PsuUQiro_4GEzrbo18G2ZGD2giFzOsvhzcmY5CMfF3w"
 };
