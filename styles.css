@@ -5,7 +5,6 @@
   --paper: #f3f8f4;
   --ink: #173328;
   --muted: #62736a;
-  --blue: #0088ce;
   --green: #246444;
   --green-dark: #184b33;
   --red: #b63d45;
@@ -25,9 +24,11 @@ body {
   font-family: 'DM Sans', 'Trebuchet MS', sans-serif;
   background-image:
     radial-gradient(#d8e6dc 0.7px, transparent 0.7px),
+    radial-gradient(circle, rgba(194, 154, 71, 0.5) 1px, transparent 1.7px),
     radial-gradient(circle at 8% 18%, rgba(255, 255, 255, 0.8), transparent 24%),
     radial-gradient(circle at 92% 84%, rgba(218, 235, 223, 0.5), transparent 26%);
-  background-size: 18px 18px, auto, auto;
+  background-size: 18px 18px, 84px 92px, auto, auto;
+  background-position: 0 0, 20px 14px, center, center;
 }
 
 .shell {
@@ -65,8 +66,8 @@ body {
   right: 6%;
   left: 6%;
   color: var(--gold);
-  content: '✦      •       ✦       •       ✦';
-  font-size: 9px;
+  content: '🔴 ✨ 🟡 ✨ 🟢 ✨ 🔴 ✨ 🟡';
+  font-size: 10px;
   line-height: 1;
   text-align: center;
   pointer-events: none;
@@ -83,7 +84,20 @@ body {
 }
 
 .brand-logo { display: block; width: 150px; height: auto; }
-.brand-label { color: var(--blue); font-size: 18px; font-weight: 700; }
+.brand-label { color: var(--red); font-size: 18px; font-weight: 700; }
+
+.holiday-trim {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 4vw, 34px);
+  text-shadow: 0 2px 8px rgba(194, 154, 71, 0.28);
+}
+
+.holiday-trim span { display: inline-block; font-size: 22px; }
+.holiday-trim span:nth-child(even) { animation: twinkle 1.8s ease-in-out infinite alternate; }
+.holiday-trim span:nth-child(4) { animation-delay: 0.6s; }
 
 .content {
   width: min(100%, 720px);
@@ -123,11 +137,23 @@ h1 em { color: var(--green); font-weight: 600; }
 }
 
 .form-panel, .draw-panel {
+  position: relative;
   background: var(--white);
   border: 1px solid var(--line);
-  border-top: 3px solid var(--red);
+  border-top: 3px solid transparent;
   border-radius: 5px;
   box-shadow: 0 14px 38px rgba(30, 67, 45, 0.07);
+}
+
+.form-panel::before, .draw-panel::before {
+  position: absolute;
+  top: -1px;
+  right: 0;
+  left: 0;
+  height: 5px;
+  border-radius: 5px 5px 0 0;
+  background: repeating-linear-gradient(90deg, var(--green) 0 18px, var(--red) 18px 36px, var(--gold) 36px 54px);
+  content: '';
 }
 
 .form-panel { padding: 25px; }
@@ -186,7 +212,7 @@ textarea::placeholder { color: #89968e; }
 
 .draw-panel { padding: 24px 28px 26px; }
 .draw-panel-top { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: 1.4px; }
-.draw-star { color: var(--gold); font-size: 20px; }
+.draw-star { color: var(--gold); font-size: 18px; letter-spacing: 1px; }
 .draw-result {
   display: grid;
   min-height: 155px;
@@ -206,12 +232,19 @@ textarea::placeholder { color: #89968e; }
 .footer { display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid var(--line); padding: 19px 0 23px; color: var(--muted); font-size: 11px; }
 
 @keyframes appear { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes twinkle { from { opacity: 0.55; transform: scale(0.9) rotate(-8deg); } to { opacity: 1; transform: scale(1.12) rotate(8deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+}
 
 @media (max-width: 600px) {
   .shell { padding: 0 22px; }
   .topbar { height: 72px; }
   .brand-logo { width: 126px; }
   .brand-label { font-size: 16px; }
+  .holiday-trim { min-height: 38px; }
+  .holiday-trim span { font-size: 19px; }
   .content { padding: 58px 0 64px; }
   .intro { margin: 19px 0 29px; font-size: 15px; }
   .form-panel { padding: 19px; }
