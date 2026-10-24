@@ -2,14 +2,13 @@
 
 :root {
   color-scheme: light;
-  --paper: #f6f4ec;
-  --ink: #243b32;
-  --muted: #74796e;
-  --green: #275b49;
-  --green-dark: #1d4739;
-  --red: #c94b35;
-  --line: #d9d8cc;
-  --white: #fffefa;
+  --paper: #f4f8fb;
+  --ink: #0c131f;
+  --muted: #657384;
+  --blue: #0088ce;
+  --blue-dark: #006fa9;
+  --line: #d9e3eb;
+  --white: #ffffff;
 }
 
 * { box-sizing: border-box; }
@@ -21,7 +20,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: 'DM Sans', 'Trebuchet MS', sans-serif;
-  background-image: radial-gradient(#c9c5b7 0.65px, transparent 0.65px);
+  background-image: radial-gradient(#d6e1e9 0.65px, transparent 0.65px);
   background-size: 16px 16px;
 }
 
@@ -40,15 +39,15 @@ body {
   border-bottom: 1px solid var(--line);
 }
 
-.wordmark {
-  color: var(--green-dark);
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 0;
+.brand {
+  display: inline-flex;
+  width: 150px;
+  flex: 0 0 auto;
+  align-items: center;
   text-decoration: none;
 }
 
-.wordmark span { color: var(--red); padding: 0 2px; }
+.brand-logo { display: block; width: 100%; height: auto; }
 
 nav { display: flex; gap: 30px; }
 
@@ -61,7 +60,7 @@ nav { display: flex; gap: 30px; }
 }
 
 .nav-link.active { color: var(--ink); font-weight: 700; }
-.nav-link.active::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--red); content: ''; }
+.nav-link.active::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--blue); content: ''; }
 
 .content {
   width: min(100%, 720px);
@@ -72,7 +71,7 @@ nav { display: flex; gap: 30px; }
 
 .eyebrow {
   margin: 0 0 21px;
-  color: var(--red);
+  color: var(--blue-dark);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.5px;
@@ -87,12 +86,12 @@ h1 {
   letter-spacing: 0;
 }
 
-h1 em { color: var(--green); font-weight: 600; }
+h1 em { color: var(--blue); font-weight: 600; }
 
 .intro {
   max-width: 470px;
   margin: 23px 0 38px;
-  color: #626b61;
+  color: #526274;
   font-size: 16px;
   line-height: 1.65;
 }
@@ -124,8 +123,8 @@ textarea {
   line-height: 1.5;
 }
 
-textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(39, 91, 73, 0.12); }
-textarea::placeholder { color: #a2a397; }
+textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0, 136, 206, 0.12); }
+textarea::placeholder { color: #8996a3; }
 
 .form-bottom { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 19px; }
 .quiet { color: var(--muted); font-size: 12px; }
@@ -148,25 +147,25 @@ textarea::placeholder { color: #a2a397; }
 
 .button:hover:not(:disabled) { transform: translateY(-1px); }
 .button[hidden] { display: none; }
-.button:focus-visible, .nav-link:focus-visible, .wordmark:focus-visible { outline: 3px solid #d08042; outline-offset: 3px; }
+.button:focus-visible, .nav-link:focus-visible, .brand:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 .button:disabled { cursor: not-allowed; opacity: 0.52; }
-.button-primary { background: var(--green); color: white; }
-.button-primary:hover:not(:disabled) { background: var(--green-dark); }
-.button-outline { border-color: var(--green); background: transparent; color: var(--green-dark); }
-.button-outline:hover:not(:disabled) { background: #edf2ed; }
+.button-primary { background: var(--blue); color: white; }
+.button-primary:hover:not(:disabled) { background: var(--blue-dark); }
+.button-outline { border-color: var(--blue); background: transparent; color: var(--blue-dark); }
+.button-outline:hover:not(:disabled) { background: #eaf5fb; }
 
 .status { min-height: 20px; margin: 14px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .status.error { color: #a53224; }
 
 .draw-panel { padding: 24px 28px 26px; }
 .draw-panel-top { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: 1.4px; }
-.draw-star { color: var(--red); font-size: 20px; }
+.draw-star { color: var(--blue); font-size: 20px; }
 .draw-result {
   display: grid;
   min-height: 155px;
   place-items: center;
   padding: 20px 10px;
-  color: var(--green-dark);
+  color: var(--ink);
   font-family: 'Playfair Display', Georgia, serif;
   font-size: clamp(30px, 5vw, 48px);
   font-weight: 600;
@@ -184,6 +183,7 @@ textarea::placeholder { color: #a2a397; }
 @media (max-width: 600px) {
   .shell { padding: 0 22px; }
   .topbar { height: 72px; }
+  .brand { width: 126px; }
   nav { gap: 22px; }
   .content { padding: 58px 0 64px; }
   .intro { margin: 19px 0 29px; font-size: 15px; }
