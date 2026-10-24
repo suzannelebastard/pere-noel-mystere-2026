@@ -55,6 +55,19 @@
     element.className = isError ? "status error" : "status";
   }
 
+  function errorMessage(error) {
+    try {
+      var details = JSON.parse(error.message);
+      if (details.code === "PGRST202") {
+        return "Le schéma Supabase n’est pas à jour. Exécutez supabase.sql dans le SQL Editor, puis rechargez le site.";
+      }
+      if (details.message) return details.message;
+    } catch (parseError) {
+      return error.message;
+    }
+    return error.message;
+  }
+
   function submitPage() {
     var form = document.getElementById("submit-form");
     var input = document.getElementById("keyword");
@@ -78,7 +91,7 @@
         input.value = "";
         showStatus(status, "Votre musique a bien été déposée. Merci !");
       }).catch(function (error) {
-        showStatus(status, error.message, true);
+        showStatus(status, errorMessage(error), true);
       }).then(function () {
         button.disabled = false;
       });
@@ -139,7 +152,7 @@
       setBusy(false);
     }).catch(function (error) {
       result.textContent = "Le tirage n’est pas disponible.";
-      showStatus(status, error.message, true);
+      showStatus(status, errorMessage(error), true);
     });
 
     drawButton.addEventListener("click", function () {
@@ -172,7 +185,7 @@
         result.textContent = rows[0].keyword_text;
         showStatus(status, "Musique provisoire. Vous pouvez relancer ou la valider.");
       }).catch(function (error) {
-        showStatus(status, error.message, true);
+        showStatus(status, errorMessage(error), true);
         result.textContent = "Le tirage n’a pas pu démarrer.";
       }).then(function () {
         setBusy(false);
@@ -200,7 +213,7 @@
         }
         markComplete();
       }).catch(function (error) {
-        showStatus(status, error.message, true);
+        showStatus(status, errorMessage(error), true);
       }).then(function () {
         setBusy(false);
       });
