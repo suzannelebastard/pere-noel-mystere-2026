@@ -264,9 +264,11 @@
     var result = document.getElementById("reveal-result");
     var status = document.getElementById("reveal-status");
     var button = document.getElementById("reveal-next");
+    var wheel = document.getElementById("reveal-wheel");
     var revealOpen = false;
     var busy = false;
     var finished = false;
+    var spinDuration = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 3200;
 
     function setBusy(value) {
       busy = value;
@@ -284,7 +286,7 @@
         showStatus(status, "Les musiques seront révélées quand le tirage sera terminé.");
         return;
       }
-      result.textContent = "Prêt à révéler la première musique.";
+      result.textContent = "Prête à tourner !";
       showStatus(status, "Une musique sera révélée à chaque tour, sans répétition.");
       setBusy(false);
     }).catch(function (error) {
@@ -297,32 +299,43 @@
       setBusy(true);
       result.textContent = "La roulette tourne…";
       showStatus(status, "Tirage d’une musique de l’archive…");
+      button.textContent = "La roulette tourne…";
+      wheel.classList.remove("is-spinning");
+      wheel.offsetWidth;
+      wheel.classList.add("is-spinning");
+      var spinStartedAt = Date.now();
       request("rpc/reveal_next_music", {
         method: "POST",
         body: "{}"
       }).then(function (rows) {
-        if (!rows || !rows.length) {
-          finished = true;
-          result.textContent = "Toutes les musiques ont été révélées.";
-          showStatus(status, "La roulette est terminée.");
-          button.textContent = "Révélation terminée";
-          return;
-        }
+        return new Promise(function (resolve) {
+          window.setTimeout(resolve, Math.max(0, spinDuration - (Date.now() - spinStartedAt)));
+        }).then(function () {
+          if (!rows || !rows.length) {
+            finished = true;
+            result.textContent = "Toutes les musiques ont été révélées.";
+            showStatus(status, "La roulette est terminée.");
+            button.textContent = "Révélation terminée";
+            return;
+          }
 
-        var music = rows[0];
-        var remaining = Number(music.remaining_count);
-        result.textContent = music.music_text;
-        if (remaining === 0) {
-          finished = true;
-          showStatus(status, "Dernière musique révélée. La roulette est terminée.");
-          button.textContent = "Révélation terminée";
-        } else {
-          showStatus(status, "Il reste " + remaining + " musique(s) à révéler.");
-          button.textContent = "Révéler la suivante";
-        }
+          var music = rows[0];
+          var remaining = Number(music.remaining_count);
+          result.textContent = music.music_text;
+          if (remaining === 0) {
+            finished = true;
+            showStatus(status, "Dernière musique révélée. La roulette est terminée.");
+            button.textContent = "Révélation terminée";
+          } else {
+            showStatus(status, "Il reste " + remaining + " musique(s) à révéler.");
+            button.textContent = "Relancer la roulette";
+          }
+        });
       }).catch(function (error) {
+        wheel.classList.remove("is-spinning");
         showStatus(status, errorMessage(error), true);
         result.textContent = "La musique n’a pas pu être révélée.";
+        button.textContent = "Réessayer la roulette";
       }).then(function () {
         setBusy(false);
       });

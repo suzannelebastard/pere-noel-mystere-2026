@@ -213,9 +213,75 @@ textarea::placeholder { color: #89968e; }
 .draw-panel { padding: 24px 28px 26px; }
 .draw-panel-top { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: 1.4px; }
 .draw-star { color: var(--gold); font-size: 18px; letter-spacing: 1px; }
+.roulette-stage {
+  position: relative;
+  display: grid;
+  min-height: 235px;
+  place-items: center;
+  padding: 24px 0 12px;
+}
+.roulette-wheel {
+  position: relative;
+  display: grid;
+  width: 190px;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 7px solid #d8b86e;
+  border-radius: 50%;
+  background: conic-gradient(
+    from -15deg,
+    var(--green) 0deg 30deg,
+    var(--red) 30deg 60deg,
+    var(--gold) 60deg 90deg,
+    var(--green-dark) 90deg 120deg,
+    var(--red) 120deg 150deg,
+    var(--gold) 150deg 180deg,
+    var(--green) 180deg 210deg,
+    var(--red) 210deg 240deg,
+    var(--gold) 240deg 270deg,
+    var(--green-dark) 270deg 300deg,
+    var(--red) 300deg 330deg,
+    var(--gold) 330deg 360deg
+  );
+  box-shadow: 0 7px 18px rgba(30, 67, 45, 0.2), inset 0 0 0 3px rgba(255, 254, 250, 0.65);
+}
+.roulette-wheel::before {
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(255, 254, 250, 0.75);
+  border-radius: 50%;
+  content: '';
+}
+.roulette-center {
+  display: grid;
+  width: 58px;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 3px solid #d8b86e;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--green-dark);
+  font-family: Georgia, serif;
+  font-size: 27px;
+  box-shadow: 0 2px 8px rgba(23, 51, 40, 0.22);
+}
+.roulette-pointer {
+  position: absolute;
+  z-index: 1;
+  top: 12px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-top: 25px solid var(--red);
+  border-right: 15px solid transparent;
+  border-left: 15px solid transparent;
+  filter: drop-shadow(0 2px 2px rgba(23, 51, 40, 0.25));
+  transform: translateX(-50%);
+}
+.roulette-wheel.is-spinning { animation: roulette-spin 3.2s cubic-bezier(0.12, 0.72, 0.18, 1) both; }
 .draw-result {
   display: grid;
-  min-height: 155px;
+  min-height: 96px;
   place-items: center;
   padding: 20px 10px;
   color: var(--green-dark);
@@ -233,6 +299,7 @@ textarea::placeholder { color: #89968e; }
 
 @keyframes appear { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes twinkle { from { opacity: 0.55; transform: scale(0.9) rotate(-8deg); } to { opacity: 1; transform: scale(1.12) rotate(8deg); } }
+@keyframes roulette-spin { to { transform: rotate(1800deg); } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
@@ -251,7 +318,9 @@ textarea::placeholder { color: #89968e; }
   .form-bottom { align-items: flex-start; flex-direction: column; }
   .form-bottom .button { width: 100%; }
   .draw-panel { padding: 21px 17px; }
-  .draw-result { min-height: 135px; }
+  .roulette-stage { min-height: 205px; }
+  .roulette-wheel { width: 165px; }
+  .draw-result { min-height: 110px; }
   .draw-actions { flex-direction: column; }
   .draw-actions .button { width: 100%; }
   .footer { align-items: flex-start; font-size: 10px; }
